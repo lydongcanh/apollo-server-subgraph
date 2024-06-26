@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
+# Install TypeScript globally
+RUN npm install -g typescript
+
 # Install dependencies
 RUN npm install --production
 
