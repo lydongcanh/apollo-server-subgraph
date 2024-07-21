@@ -1,50 +1,27 @@
-import express from 'express';
-import { ApolloServer } from 'apollo-server-express';
-import { buildSubgraphSchema } from '@apollo/subgraph';
-import gql from 'graphql-tag';
+import express from "express";
+import { ApolloServer } from "apollo-server-express";
+import { buildSubgraphSchema } from "@apollo/subgraph";
+import { GraphQLSchema, printSchema } from "graphql";
+import { typeDefs } from "./typeDefs.js";
+import { resolvers } from "./resolvers.js";
 
 async function startApolloServer() {
   const app = express();
 
-  const typeDefs = gql`
-    extend schema
-      @link(
-        url: "https://specs.apollo.dev/federation/v2.0"
-        import: ["@key", "@shareable"]
-      )
-
-    type Profile @key(fields: "id") {
-      id: String
-      email: String
-      firstName: String
-      lastName: String
-    }
-
-    type Query {
-      me: Profile
-    }
-  `;
-
-  const me = {
-    id: "123e4567-e89b-12d3-a456-426614174000",
-    email: "johndoe@example.com",
-    firstName: "John",
-    lastName: "Doe",
-  };
-
-  const resolvers = {
-    Query: {
-      me: () => me,
-    },
-  };
+  const schema: GraphQLSchema = buildSubgraphSchema({ typeDefs, resolvers });
 
   const server = new ApolloServer({
-    schema: buildSubgraphSchema({ typeDefs, resolvers }),
+    schema,
   });
 
   await server.start();
 
-  server.applyMiddleware({ app, path: '/graphql' });
+  server.applyMiddleware({ app, path: "/graphql" });
+
+  app.use("/sdl", (req, res) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.send(printSchema(schema));
+  });
 
   const port = process.env.PORT || 4000;
   app.listen({ port }, () =>
@@ -52,6 +29,6 @@ async function startApolloServer() {
   );
 }
 
-startApolloServer().catch(err => {
-  console.error('Error starting server:', err);
+startApolloServer().catch((err) => {
+  console.error("Error starting server:", err);
 });
