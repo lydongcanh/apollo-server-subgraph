@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install -g typescript
 
 # Install dependencies
-RUN npm install --production
+RUN npm install --production --force
 
 # Copy the rest of the application code to the working directory
 COPY . .
