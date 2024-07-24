@@ -27,14 +27,14 @@ directive @federation__authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | 
 directive @federation__requiresScopes(scopes: [[federation__Scope!]!]!) on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
 type Profile {
-  id: String
+  id: ID! @shareable
   email: String
   firstName: String
   lastName: String
 }
 
 type Query {
-  me: Profile
+  me: Profile @shareable
   _entities(representations: [_Any!]!): [_Entity]!
   _service: _Service!
 }

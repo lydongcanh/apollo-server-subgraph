@@ -21,13 +21,13 @@ export const typeDefs = gql`
     )
 
   type Profile @key(fields: "id") {
-    id: String
+    id: ID! @shareable
     email: String
     firstName: String
     lastName: String
   }
 
   type Query {
-    me: Profile
+    me: Profile @shareable
   }
 `;
